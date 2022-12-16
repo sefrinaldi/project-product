@@ -1,7 +1,6 @@
 package com.sefrinaldi.productservice.validator;
 
 import com.sefrinaldi.productservice.dto.ProductRequestDto;
-import com.sefrinaldi.productservice.entity.Product;
 import com.sefrinaldi.productservice.service.validation.ValidationProductService;
 import com.sefrinaldi.productservice.validator.contraint.ProductCodeIsExist;
 import javassist.NotFoundException;
