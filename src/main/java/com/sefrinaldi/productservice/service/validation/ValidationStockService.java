@@ -29,4 +29,8 @@ public class ValidationStockService {
         }
         return stock;
     }
+
+    public Stock getStock() {
+        return stock;
+    }
 }

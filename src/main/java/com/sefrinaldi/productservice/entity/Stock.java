@@ -3,8 +3,11 @@ package com.sefrinaldi.productservice.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import net.logstash.logback.encoder.org.apache.commons.lang3.math.NumberUtils;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -25,4 +28,9 @@ public class Stock {
 
     @Builder.Default
     private Integer stockProduct = NumberUtils.INTEGER_ZERO;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

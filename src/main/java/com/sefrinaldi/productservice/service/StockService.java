@@ -20,7 +20,7 @@ public class StockService {
 
     public Stock modifyStockProduct(Long id, StockRequestDto stockRequestDto) throws NotFoundException {
         Stock stock = validationStockService.getStockById(id);
-        stock.setStockProduct(stockRequestDto.getStockProduct());
+        stock.setStockProduct(stock.getStockProduct() + stockRequestDto.getStockProduct());
         stockRepository.save(stock);
         return stock;
     }

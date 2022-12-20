@@ -2,6 +2,7 @@ package com.sefrinaldi.productservice.repository;
 
 import com.sefrinaldi.productservice.entity.Product;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +12,5 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByCode(String code);
+    Page<Product> findAllByStatus(Product.Status status, Pageable pageable);
 }

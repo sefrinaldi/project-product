@@ -1,5 +1,6 @@
 package com.sefrinaldi.productservice.controller;
 
+import com.sefrinaldi.productservice.dto.ProductCreatedDto;
 import com.sefrinaldi.productservice.dto.ProductDto;
 import com.sefrinaldi.productservice.dto.ProductRequestDto;
 import com.sefrinaldi.productservice.entity.Product;
@@ -9,20 +10,21 @@ import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/product-service")
+@Validated
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
     @PostMapping("/create-product")
-    public ProductDto createProduct(@RequestBody @Valid ProductRequestDto productRequestDto) {
+    public ProductCreatedDto createProduct(@RequestBody @Valid ProductRequestDto productRequestDto) {
         return productService.createProduct(productRequestDto);
     }
 
@@ -32,14 +34,23 @@ public class ProductController {
     }
 
     @GetMapping("/get-product")
-    public Page<Product> productPage(Pageable pageable) {
+    public Page<Product> productPage(Pageable pageable) throws NotFoundException {
         return productService.getAllProduct(pageable);
     }
 
     @PutMapping("/edit-product/{code}")
-    public Product editProduct(
-            @PathVariable(value = "code") @Valid @ProductCodeIsNotFound String code,
+    public ProductDto editProduct(
+            @PathVariable(value = "code") @ProductCodeIsNotFound String code,
             @RequestBody ProductRequestDto productRequestDto) throws NotFoundException {
         return productService.editProduct(code, productRequestDto);
+    }
+
+    @PatchMapping("/active-product/{code}")
+    public ProductDto deleteProduct(
+            @PathVariable(value = "code")
+            @ProductCodeIsNotFound
+                    String code,
+            @RequestBody String status) throws NotFoundException {
+        return productService.deleteProduct(code, status);
     }
 }

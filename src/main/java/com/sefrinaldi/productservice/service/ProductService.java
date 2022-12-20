@@ -1,5 +1,6 @@
 package com.sefrinaldi.productservice.service;
 
+import com.sefrinaldi.productservice.dto.ProductCreatedDto;
 import com.sefrinaldi.productservice.dto.ProductDto;
 import com.sefrinaldi.productservice.dto.ProductRequestDto;
 import com.sefrinaldi.productservice.entity.Product;
@@ -14,7 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Service
@@ -25,7 +26,7 @@ public class ProductService {
     private final ValidationProductService validationProductService;
     private final MapperFacade mapperFacade;
 
-    public ProductDto createProduct(ProductRequestDto productRequestDto) {
+    public ProductCreatedDto createProduct(ProductRequestDto productRequestDto) {
 
         Product product = mapperFacade.map(productRequestDto, Product.class);
 
@@ -37,19 +38,19 @@ public class ProductService {
         product.setStock(stock);
 
         productRepository.save(product);
-        return mapperFacade.map(product, ProductDto.class);
+        return mapperFacade.map(product, ProductCreatedDto.class);
     }
 
     public Product getProduct(String code) throws NotFoundException {
         return validationProductService.getProductByCode(code);
     }
 
-    public Page<Product> getAllProduct(Pageable pageable) {
-        return productRepository.findAll(pageable);
+    public Page<Product> getAllProduct(Pageable pageable) throws NotFoundException {
+        return validationProductService.getProductByStatusActive(Product.Status.ACTIVE, pageable);
 //        return productRepository.findAll();
     }
 
-    public Product editProduct(String code, ProductRequestDto productRequestDto) throws NotFoundException {
+    public ProductDto editProduct(String code, ProductRequestDto productRequestDto) throws NotFoundException {
         Product product = validationProductService.getProductByCode(code);
 
         Product newProduct = Product.builder()
@@ -57,7 +58,17 @@ public class ProductService {
                 .code(product.getCode())
                 .label(Objects.isNull(productRequestDto.getLabel()) ? product.getLabel() : productRequestDto.getLabel())
                 .amount(Objects.isNull(productRequestDto.getAmount()) ? product.getAmount() : productRequestDto.getAmount())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(LocalDateTime.now())
                 .build();
-        return productRepository.save(newProduct);
+        productRepository.save(newProduct);
+        return mapperFacade.map(newProduct, ProductDto.class);
+    }
+
+    public ProductDto deleteProduct(String code, String status) throws NotFoundException {
+        Product product = validationProductService.getProductByCode(code);
+        product.setStatus(Product.Status.valueOf(status));
+        productRepository.save(product);
+        return mapperFacade.map(product, ProductDto.class);
     }
 }
